@@ -1,0 +1,18 @@
+May 6th 23:47 
+改掉程式裡面所有使用到while-loop if continue的busy waiting.
+測試過輸出影片raw 與out皆正常
+
+May 10th 12:15
+原先的event.wait被set後就不會再起作用(will not block the thread anymore)
+1) 因此在前面加上clear清除狀態
+2) 在主程式結束後喚醒所有waiting threads
+
+frame被重複copied issue
+frame在main程式與Payload class assign之間有複製整個numpy list的現象
+因此避免原先方式
+❌避免下列:
+ret, frame = cap.read() <= copy a frame from cap
+payload.update(frame)   <= copy whole list from frame again
+⭕️改用下列:
+ret, payload.frame = cap.read()
+ret = payload.update_from_cap(cap.read())
